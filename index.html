@@ -1,14 +1,7 @@
-<!DOCTYPE html>
 <html>
 
 <head>
-    <meta charset="utf-8">
-    <title>Go Wasm Counter</title>
-</head>
-
-<body>
-    <p>Counter: <span id="counter">0</span></p>
-    <button onclick="increment()">Increment</button>
+    <meta charset="utf-8" />
     <script src="wasm_exec.js"></script>
     <script>
         const go = new Go();
@@ -16,6 +9,8 @@
             go.run(result.instance);
         });
     </script>
-</body>
+</head>
+
+<body></body>
 
 </html>
