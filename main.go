@@ -1,27 +1,43 @@
+//go:build js && wasm
+
 package main
 
 import (
-	"strconv"
 	"syscall/js"
 )
 
-var counter int
+func generateTable(this js.Value, p []js.Value) interface{} {
+	document := js.Global().Get("document")
+	table := document.Call("createElement", "table")
+	table.Set("border", "1")
 
-func increment(this js.Value, p []js.Value) interface{} {
-	counter++
-	js.Global().Get("document").Call("getElementById", "counter").Set("innerText", strconv.Itoa(counter))
+	days := []string{"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"}
+	hours := []string{"9:00 AM", "12:00 PM", "3:00 PM", "6:00 PM", "9:00 PM"}
+
+	for _, day := range days {
+		row := document.Call("createElement", "tr")
+		headCell := document.Call("createElement", "th")
+		headCell.Set("innerText", day)
+		row.Call("appendChild", headCell)
+		for _, hour := range hours {
+			cell := document.Call("createElement", "td")
+			cell.Set("innerText", hour)
+			row.Call("appendChild", cell)
+		}
+		table.Call("appendChild", row)
+	}
+
+	container := document.Call("getElementById", "tableContainer")
+	container.Set("innerHTML", "") // Clear previous table
+	container.Call("appendChild", table)
+
 	return nil
 }
 
 func main() {
-	// Set initial counter value in the HTML
-	js.Global().Get("document").Call("getElementById", "counter").Set("innerText", strconv.Itoa(counter))
-
-	// Bind the increment function to the button's click event
-	cb := js.FuncOf(increment)
+	cb := js.FuncOf(generateTable)
 	defer cb.Release()
-	js.Global().Get("document").Call("getElementById", "incrementButton").Call("addEventListener", "click", cb)
 
-	// Prevent the Go program from exiting
+	js.Global().Get("document").Call("getElementById", "incrementButton").Call("addEventListener", "click", cb)
 	select {}
 }
