@@ -3,17 +3,28 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>test-project</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Base64 Encoder</title>
 </head>
 
 <body>
-    <h1>Counter: <span id="counter">0</span></h1>
-    <button id="incrementButton">Generate Table</button>
+    <h1>Base64 Encoder</h1>
+    <input type="text" id="inputText" placeholder="Enter text here">
+    <button id="encodeButton">Encode</button>
+    <p id="encodedText"></p>
 
-    <div id="tableContainer"></div> <!-- Container for the generated table -->
-
-    <script src="wasm_exec.js"></script>
     <script>
+        const encodeButton = document.getElementById("encodeButton");
+        encodeButton.onclick = function () {
+            const inputText = document.getElementById("inputText").value;
+            if (inputText) {
+                // Call the Go WASM function to base64 encode
+                const encodedText = go.runWasm(inputText);
+                document.getElementById("encodedText").innerText = "Base64 Encoded: " + encodedText;
+            }
+        };
+
+        // Load the WASM file
         const go = new Go();
         WebAssembly.instantiateStreaming(fetch("main.wasm"), go.importObject).then((result) => {
             go.run(result.instance);

@@ -3,41 +3,21 @@
 package main
 
 import (
+	"encoding/base64"
 	"syscall/js"
 )
 
-func generateTable(this js.Value, p []js.Value) interface{} {
-	document := js.Global().Get("document")
-	table := document.Call("createElement", "table")
-	table.Set("border", "1")
-
-	days := []string{"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"}
-	hours := []string{"9:00 AM", "12:00 PM", "3:00 PM", "6:00 PM", "9:00 PM"}
-
-	for _, day := range days {
-		row := document.Call("createElement", "tr")
-		headCell := document.Call("createElement", "th")
-		headCell.Set("innerText", day)
-		row.Call("appendChild", headCell)
-		for _, hour := range hours {
-			cell := document.Call("createElement", "td")
-			cell.Set("innerText", hour)
-			row.Call("appendChild", cell)
-		}
-		table.Call("appendChild", row)
-	}
-
-	container := document.Call("getElementById", "tableContainer")
-	container.Set("innerHTML", "") // Clear previous table
-	container.Call("appendChild", table)
-
-	return nil
+func encodeBase64(this js.Value, p []js.Value) interface{} {
+	text := p[0].String() // Get the text from JavaScript
+	encoded := base64.StdEncoding.EncodeToString([]byte(text))
+	return js.ValueOf(encoded) // Return the encoded base64 string back to JavaScript
 }
 
 func main() {
-	cb := js.FuncOf(generateTable)
-	defer cb.Release()
+	c := make(chan struct{}, 0)
 
-	js.Global().Get("document").Call("getElementById", "incrementButton").Call("addEventListener", "click", cb)
-	select {}
+	// Register the Go function to be callable from JavaScript
+	js.Global().Set("runWasm", js.FuncOf(encodeBase64))
+
+	<-c // Keep the Go program running
 }
