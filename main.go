@@ -12,18 +12,19 @@ type Args struct {
 	Input string
 }
 
+// Grabs the selected value from the dropdown menu
 func getArgsFromDOM() Args {
 	document := js.Global().Get("document")
-	input := document.Call("getElementById", "inputText").Get("value").String()
-	return Args{Input: input}
+	selected := document.Call("getElementById", "inputSelect").Get("value").String()
+	return Args{Input: selected}
 }
 
 func encodeBase64(this js.Value, args []js.Value) any {
 	argData := getArgsFromDOM()
 
-	slog.Info("encodeBase64", slog.Any("argData", argData))
-
+	slog.Info("encoding selected value", slog.Any("input", argData.Input))
 	encoded := base64.StdEncoding.EncodeToString([]byte(argData.Input))
+	slog.Info("encoded result", slog.Any("encoded", encoded))
 
 	document := js.Global().Get("document")
 	outputElem := document.Call("getElementById", "output")

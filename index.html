@@ -8,8 +8,18 @@
 
 <body>
     <h2>Base64 Encoder</h2>
-    <input type="text" id="inputText" placeholder="Enter text here" />
+
+    <label for="inputSelect">Select a workout:</label>
+    <select id="inputSelect">
+        <option value="Push">Push</option>
+        <option value="Pull">Pull</option>
+        <option value="Legs">Legs</option>
+        <option value="Upper">Upper</option>
+        <option value="Lower">Lower</option>
+    </select>
+
     <button id="encode">Encode</button>
+
     <p><strong>Encoded Output:</strong> <span id="output"></span></p>
 
     <script src="wasm_exec.js"></script>
