@@ -1,23 +1,44 @@
-<script>
-    // Ensure Go instance is available
-    const go = new Go();
+<!DOCTYPE html>
+<html lang="en">
 
-    // Load the WASM file and run the Go code
-    WebAssembly.instantiateStreaming(fetch("main.wasm"), go.importObject)
-        .then((result) => {
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Base64 Encoder</title>
+</head>
+
+<body>
+    <h1>Base64 Encoder</h1>
+    <input type="text" id="inputText" placeholder="Enter text here">
+    <button id="encodeButton">Encode</button>
+    <p id="encodedText"></p>
+
+    <script>
+        // Ensure Go instance is available
+        const go = new Go();
+
+        // Load the WASM file and run the Go code
+        WebAssembly.instantiateStreaming(fetch("main.wasm"), go.importObject).then((result) => {
             go.run(result.instance);
-
-            // Add event listener after WASM is loaded
-            document.getElementById("encodeButton").addEventListener("click", function () {
-                const inputText = document.getElementById("inputText").value;
-                if (inputText) {
-                    // Call Go function (wasmEncodeBase64) from JavaScript
-                    const encodedText = wasmEncodeBase64(inputText);
-                    document.getElementById("encodedText").innerText = "Base64 Encoded: " + encodedText;
-                }
-            });
-        })
-        .catch((err) => {
+        }).catch((err) => {
             console.error("Failed to load WASM:", err);
         });
-</script>
+
+        // Add event listener for the encode button
+        document.getElementById("encodeButton").addEventListener("click", function () {
+            const inputText = document.getElementById("inputText").value;
+            if (inputText) {
+                // Call Go function (wasmEncodeBase64) from JavaScript
+                if (typeof wasmEncodeBase64 === "function") {
+                    const encodedText = wasmEncodeBase64(inputText);
+                    document.getElementById("encodedText").innerText = "Base64 Encoded: " + encodedText;
+                } else {
+                    console.error("wasmEncodeBase64 function is not defined.");
+                }
+                document.getElementById("encodedText").innerText = "Base64 Encoded: " + encodedText;
+            }
+        });
+    </script>
+</body>
+
+</html>
