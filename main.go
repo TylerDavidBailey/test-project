@@ -7,17 +7,17 @@ import (
 	"syscall/js"
 )
 
+// Go function to encode text to base64
 func encodeBase64(this js.Value, p []js.Value) interface{} {
 	text := p[0].String() // Get the text from JavaScript
 	encoded := base64.StdEncoding.EncodeToString([]byte(text))
-	return js.ValueOf(encoded) // Return the encoded base64 string back to JavaScript
+	return js.ValueOf(encoded) // Return the base64 encoded string to JavaScript
 }
 
 func main() {
-	c := make(chan struct{}, 0)
+	// Register Go function so it can be called from JavaScript
+	js.Global().Set("wasmEncodeBase64", js.FuncOf(encodeBase64))
 
-	// Register the Go function to be callable from JavaScript
-	js.Global().Set("runWasm", js.FuncOf(encodeBase64))
-
-	<-c // Keep the Go program running
+	// Block the Go program from exiting
+	select {}
 }

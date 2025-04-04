@@ -14,31 +14,21 @@
     <p id="encodedText"></p>
 
     <script>
-        const encodeButton = document.getElementById("encodeButton");
-
-        // Function to call Go WASM and get the encoded result
-        encodeButton.onclick = async function () {
-            const inputText = document.getElementById("inputText").value;
-            if (inputText) {
-                // Call the Go WASM function to base64 encode
-                const encodedText = await encodeBase64(inputText);
-                document.getElementById("encodedText").innerText = "Base64 Encoded: " + encodedText;
-            }
-        };
-
-        // Load the WASM file
+        // Ensure Go instance is available
         const go = new Go();
+
         WebAssembly.instantiateStreaming(fetch("main.wasm"), go.importObject).then((result) => {
             go.run(result.instance);
         });
 
-        // Define a function to call the Go wasm function
-        function encodeBase64(input) {
-            return new Promise((resolve) => {
-                const encoded = go.wasmEncodeBase64(input);
-                resolve(encoded);
-            });
-        }
+        document.getElementById("encodeButton").addEventListener("click", function () {
+            const inputText = document.getElementById("inputText").value;
+            if (inputText) {
+                // Call Go function (wasmEncodeBase64) from JavaScript
+                const encodedText = wasmEncodeBase64(inputText);
+                document.getElementById("encodedText").innerText = "Base64 Encoded: " + encodedText;
+            }
+        });
     </script>
 </body>
 
