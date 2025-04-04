@@ -17,10 +17,14 @@
         // Ensure Go instance is available
         const go = new Go();
 
+        // Load the WASM file and run the Go code
         WebAssembly.instantiateStreaming(fetch("main.wasm"), go.importObject).then((result) => {
             go.run(result.instance);
+        }).catch((err) => {
+            console.error("Failed to load WASM:", err);
         });
 
+        // Add event listener for the encode button
         document.getElementById("encodeButton").addEventListener("click", function () {
             const inputText = document.getElementById("inputText").value;
             if (inputText) {
