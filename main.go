@@ -3,21 +3,44 @@
 package main
 
 import (
-	"encoding/base64"
 	"syscall/js"
 )
 
-// Go function to encode text to base64
-func encodeBase64(this js.Value, p []js.Value) interface{} {
-	text := p[0].String() // Get the text from JavaScript
-	encoded := base64.StdEncoding.EncodeToString([]byte(text))
-	return js.ValueOf(encoded) // Return the base64 encoded string to JavaScript
+var count int
+
+func updateCounterDisplay() {
+	document := js.Global().Get("document")
+	counterText := document.Call("getElementById", "counter")
+	counterText.Set("innerHTML", count)
+}
+
+func increment(this js.Value, args []js.Value) any {
+	count++
+	updateCounterDisplay()
+	return nil
+}
+
+func clear(this js.Value, args []js.Value) any {
+	count = 0
+	updateCounterDisplay()
+	return nil
 }
 
 func main() {
-	// Register Go function so it can be called from JavaScript
-	js.Global().Set("wasmEncodeBase64", js.FuncOf(encodeBase64))
+	c := make(chan struct{}, 0)
 
-	// Block the Go program from exiting
-	select {}
+	document := js.Global().Get("document")
+
+	// Bind increment button
+	incrBtn := document.Call("getElementById", "increment")
+	incrBtn.Call("addEventListener", "click", js.FuncOf(increment))
+
+	// Bind clear button
+	clearBtn := document.Call("getElementById", "clear")
+	clearBtn.Call("addEventListener", "click", js.FuncOf(clear))
+
+	// Initialize display
+	updateCounterDisplay()
+
+	<-c // Prevent main from exiting
 }
