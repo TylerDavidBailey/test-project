@@ -4,6 +4,93 @@
 <head>
     <meta charset="utf-8">
     <title>RandomPPL - Go WASM</title>
+    <style>
+        /* Basic Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f4f8;
+            color: #333;
+            padding: 20px;
+            text-align: center;
+        }
+
+        h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-size: 16px;
+            margin-right: 10px;
+            font-weight: bold;
+        }
+
+        select,
+        button {
+            font-size: 16px;
+            padding: 10px;
+            margin: 10px;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            background-color: #fff;
+        }
+
+        button {
+            cursor: pointer;
+            background-color: #3498db;
+            color: #fff;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        p {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+
+        strong {
+            font-weight: bold;
+        }
+
+        #output {
+            color: #3498db;
+            font-weight: bold;
+        }
+
+        /* Styling for larger screens */
+        @media (min-width: 600px) {
+            body {
+                max-width: 600px;
+                margin: 0 auto;
+                padding: 40px;
+                background-color: #ffffff;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            }
+
+            h2 {
+                font-size: 28px;
+            }
+
+            select,
+            button {
+                font-size: 18px;
+                width: 200px;
+            }
+
+            p {
+                font-size: 20px;
+            }
+        }
+    </style>
 </head>
 
 <body>
@@ -18,7 +105,7 @@
         <option value="Lower">Lower</option>
     </select>
 
-    <button id="enter">enter</button>
+    <button id="enter">Enter</button>
 
     <p><strong>Output:</strong> <span id="output"></span></p>
 
