@@ -1,119 +1,26 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-    <meta charset="utf-8">
-    <title>RandomPPL - Go WASM</title>
+    <meta charset="UTF-8">
+    <title>WASM Workout Table</title>
     <style>
-        /* Basic Reset */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        table {
+            border-collapse: collapse;
+            margin-top: 1em;
         }
 
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f0f4f8;
-            color: #333;
-            padding: 20px;
-            text-align: center;
-        }
-
-        h2 {
-            color: #2c3e50;
-            margin-bottom: 20px;
-        }
-
-        label {
-            font-size: 16px;
-            margin-right: 10px;
-            font-weight: bold;
-        }
-
-        select,
-        button {
-            font-size: 16px;
-            padding: 10px;
-            margin: 10px;
-            border: 2px solid #ccc;
-            border-radius: 5px;
-            background-color: #fff;
-        }
-
-        button {
-            cursor: pointer;
-            background-color: #3498db;
-            color: #fff;
-            transition: background-color 0.3s;
-        }
-
-        button:hover {
-            background-color: #2980b9;
-        }
-
-        p {
-            margin-top: 20px;
-            font-size: 18px;
-        }
-
-        strong {
-            font-weight: bold;
-        }
-
-        #output {
-            color: #3498db;
-            font-weight: bold;
-        }
-
-        /* Styling for larger screens */
-        @media (min-width: 600px) {
-            body {
-                max-width: 600px;
-                margin: 0 auto;
-                padding: 40px;
-                background-color: #ffffff;
-                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            }
-
-            h2 {
-                font-size: 28px;
-            }
-
-            select,
-            button {
-                font-size: 18px;
-                width: 200px;
-            }
-
-            p {
-                font-size: 20px;
-            }
+        th,
+        td {
+            border: 1px solid #ccc;
+            padding: 8px 12px;
         }
     </style>
-    <!DOCTYPE html>
-    <html lang="en">
-
-    <head>
-        <meta charset="UTF-8">
-        <title>WASM Workout Table</title>
-        <style>
-            table {
-                border-collapse: collapse;
-                margin-top: 1em;
-            }
-
-            th,
-            td {
-                border: 1px solid #ccc;
-                padding: 8px 12px;
-            }
-        </style>
-    </head>
+</head>
 
 <body>
     <h1>Workout Plan</h1>
-    <button onclick="loadWorkout()">Generate Plan</button>
+    <button id="btn">Generate Plan</button>
     <table id="workoutTable">
         <thead>
             <tr>
@@ -127,22 +34,22 @@
     <script src="wasm_exec.js"></script>
     <script>
         const go = new Go();
-        WebAssembly.instantiateStreaming(fetch("main.wasm"), go.importObject).then((result) => {
+
+        WebAssembly.instantiateStreaming(fetch("main.wasm"), go.importObject).then(result => {
             go.run(result.instance);
+            document.getElementById("btn").onclick = () => {
+                const data = generateWorkout(); // now this works
+                const tbody = document.querySelector("#workoutTable tbody");
+                tbody.innerHTML = ""; // clear old rows
+
+                for (let i = 0; i < data.length; i++) {
+                    const [exercise, reps] = data[i].split(":");
+                    const row = document.createElement("tr");
+                    row.innerHTML = `<td>${exercise}</td><td>${reps}</td>`;
+                    tbody.appendChild(row);
+                }
+            };
         });
-
-        function loadWorkout() {
-            const data = generateWorkout(); // This returns an array of strings like "Push-ups:10"
-            const tbody = document.querySelector("#workoutTable tbody");
-            tbody.innerHTML = ""; // Clear previous rows
-
-            for (let i = 0; i < data.length; i++) {
-                const [exercise, reps] = data[i].split(":");
-                const row = document.createElement("tr");
-                row.innerHTML = `<td>${exercise}</td><td>${reps}</td>`;
-                tbody.appendChild(row);
-            }
-        }
     </script>
 </body>
 
