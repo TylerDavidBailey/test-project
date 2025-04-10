@@ -3,27 +3,24 @@
 package main
 
 import (
-	"strings"
 	"syscall/js"
 )
 
 func generateWorkout(this js.Value, args []js.Value) any {
-	plan := []string{
-		"10 push-ups",
-		"15 squats",
-		"20 jumping jacks",
-		"30-second plank",
+	workout := []string{
+		"Push-ups:10",
+		"Squats:15",
+		"Jumping Jacks:20",
+		"Plank (sec):30",
 	}
 
-	// Join as a string
-	workout := strings.Join(plan, "\\n")
+	// Convert Go slice to JS array
+	jsArray := js.Global().Get("Array").New(len(workout))
+	for i, item := range workout {
+		jsArray.SetIndex(i, item)
+	}
 
-	// Set the text to the DOM
-	js.Global().Get("document").
-		Call("getElementById", "workout").
-		Set("innerText", workout)
-
-	return nil
+	return jsArray
 }
 
 func registerCallbacks() {

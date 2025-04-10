@@ -91,21 +91,59 @@
             }
         }
     </style>
-<head>
-  <meta charset="UTF-8">
-  <title>WASM Workout Generator</title>
-</head>
-<body>
-  <h1>Workout Plan</h1>
-  <button onclick="generateWorkout()">Generate</button>
-  <pre id="workout"></pre>
+    <!DOCTYPE html>
+    <html lang="en">
 
-  <script src="wasm_exec.js"></script>
-  <script>
-    const go = new Go();
-    WebAssembly.instantiateStreaming(fetch("main.wasm"), go.importObject).then((result) => {
-      go.run(result.instance);
-    });
-  </script>
+    <head>
+        <meta charset="UTF-8">
+        <title>WASM Workout Table</title>
+        <style>
+            table {
+                border-collapse: collapse;
+                margin-top: 1em;
+            }
+
+            th,
+            td {
+                border: 1px solid #ccc;
+                padding: 8px 12px;
+            }
+        </style>
+    </head>
+
+<body>
+    <h1>Workout Plan</h1>
+    <button onclick="loadWorkout()">Generate Plan</button>
+    <table id="workoutTable">
+        <thead>
+            <tr>
+                <th>Exercise</th>
+                <th>Reps</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <script src="wasm_exec.js"></script>
+    <script>
+        const go = new Go();
+        WebAssembly.instantiateStreaming(fetch("main.wasm"), go.importObject).then((result) => {
+            go.run(result.instance);
+        });
+
+        function loadWorkout() {
+            const data = generateWorkout(); // This returns an array of strings like "Push-ups:10"
+            const tbody = document.querySelector("#workoutTable tbody");
+            tbody.innerHTML = ""; // Clear previous rows
+
+            for (let i = 0; i < data.length; i++) {
+                const [exercise, reps] = data[i].split(":");
+                const row = document.createElement("tr");
+                row.innerHTML = `<td>${exercise}</td><td>${reps}</td>`;
+                tbody.appendChild(row);
+            }
+        }
+    </script>
 </body>
+
 </html>
