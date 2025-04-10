@@ -3,40 +3,35 @@
 package main
 
 import (
-	"log/slog"
+	"strings"
 	"syscall/js"
 )
 
-type Args struct {
-	Input string
-}
+func generateWorkout(this js.Value, args []js.Value) any {
+	plan := []string{
+		"10 push-ups",
+		"15 squats",
+		"20 jumping jacks",
+		"30-second plank",
+	}
 
-func getArgsFromDOM() Args {
-	document := js.Global().Get("document")
-	selected := document.Call("getElementById", "inputSelect").Get("value").String()
-	return Args{Input: selected}
-}
+	// Join as a string
+	workout := strings.Join(plan, "\\n")
 
-func handleClick(this js.Value, args []js.Value) any {
-	argData := getArgsFromDOM()
-
-	slog.Info("selected value", slog.Any("input", argData.Input))
-
-	document := js.Global().Get("document")
-	outputElem := document.Call("getElementById", "output")
-	outputElem.Set("innerHTML", argData.Input)
+	// Set the text to the DOM
+	js.Global().Get("document").
+		Call("getElementById", "workout").
+		Set("innerText", workout)
 
 	return nil
 }
 
+func registerCallbacks() {
+	js.Global().Set("generateWorkout", js.FuncOf(generateWorkout))
+}
+
 func main() {
-	slog.Info("WASM app starting")
-
 	c := make(chan struct{}, 0)
-
-	document := js.Global().Get("document")
-	enterBtn := document.Call("getElementById", "enter")
-	enterBtn.Call("addEventListener", "click", js.FuncOf(handleClick))
-
+	registerCallbacks()
 	<-c
 }

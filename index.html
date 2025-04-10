@@ -91,30 +91,21 @@
             }
         }
     </style>
+<head>
+  <meta charset="UTF-8">
+  <title>WASM Workout Generator</title>
 </head>
-
 <body>
-    <h2>RandomPPL Encoder</h2>
+  <h1>Workout Plan</h1>
+  <button onclick="generateWorkout()">Generate</button>
+  <pre id="workout"></pre>
 
-    <label for="inputSelect">Select a workout:</label>
-    <select id="inputSelect">
-        <option value="Push">Push</option>
-        <option value="Pull">Pull</option>
-        <option value="Legs">Legs</option>
-        <option value="Upper">Upper</option>
-        <option value="Lower">Lower</option>
-    </select>
-
-    <button id="enter">Enter</button>
-
-    <p><strong>Output:</strong> <span id="output"></span></p>
-
-    <script src="wasm_exec.js"></script>
-    <script>
-        const go = new Go();
-        WebAssembly.instantiateStreaming(fetch("main.wasm"), go.importObject)
-            .then(result => go.run(result.instance));
-    </script>
+  <script src="wasm_exec.js"></script>
+  <script>
+    const go = new Go();
+    WebAssembly.instantiateStreaming(fetch("main.wasm"), go.importObject).then((result) => {
+      go.run(result.instance);
+    });
+  </script>
 </body>
-
 </html>
