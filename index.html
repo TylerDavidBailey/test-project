@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>WASM Workout Table</title>
+    <title>WASM Table Example</title>
     <style>
         table {
             border-collapse: collapse;
@@ -19,14 +19,11 @@
 </head>
 
 <body>
-    <h1>Workout Plan</h1>
-    <button id="btn">Generate Plan</button>
-    <table id="workoutTable">
+    <h1>Data Table</h1>
+    <button id="btn">Load Table</button>
+    <table id="dataTable">
         <thead>
-            <tr>
-                <th>Exercise</th>
-                <th>Reps</th>
-            </tr>
+            <tr></tr>
         </thead>
         <tbody></tbody>
     </table>
@@ -37,15 +34,31 @@
 
         WebAssembly.instantiateStreaming(fetch("main.wasm"), go.importObject).then(result => {
             go.run(result.instance);
-            document.getElementById("btn").onclick = () => {
-                const data = generateWorkout(); // now this works
-                const tbody = document.querySelector("#workoutTable tbody");
-                tbody.innerHTML = ""; // clear old rows
 
-                for (let i = 0; i < data.length; i++) {
-                    const [exercise, reps] = data[i].split(":");
+            document.getElementById("btn").onclick = () => {
+                const tableData = getTable();
+                const tbody = document.querySelector("#dataTable tbody");
+                const thead = document.querySelector("#dataTable thead tr");
+
+                // Clear previous table content
+                thead.innerHTML = "";
+                tbody.innerHTML = "";
+
+                // Render headers
+                for (let i = 0; i < tableData.headers.length; i++) {
+                    const th = document.createElement("th");
+                    th.textContent = tableData.headers[i];
+                    thead.appendChild(th);
+                }
+
+                // Render rows
+                for (let i = 0; i < tableData.rows.length; i++) {
                     const row = document.createElement("tr");
-                    row.innerHTML = `<td>${exercise}</td><td>${reps}</td>`;
+                    for (let j = 0; j < tableData.rows[i].length; j++) {
+                        const td = document.createElement("td");
+                        td.textContent = tableData.rows[i][j];
+                        row.appendChild(td);
+                    }
                     tbody.appendChild(row);
                 }
             };

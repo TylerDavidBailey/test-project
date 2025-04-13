@@ -6,22 +6,44 @@ import (
 	"syscall/js"
 )
 
-func generateWorkout(this js.Value, args []js.Value) any {
-	workout := []string{
-		"Push-ups:10",
-		"Squats:15",
-		"Jumping Jacks:20",
-		"Plank (sec):30",
+type Table struct {
+	Headers []string
+	Rows    [][]string
+}
+
+func getTable(this js.Value, args []js.Value) any {
+	table := Table{
+		Headers: []string{"Column A", "Column B", "Column C"},
+		Rows: [][]string{
+			{"Row 1A", "Row 1B", "Row 1C"},
+			{"Row 2A", "Row 2B", "Row 2C"},
+		},
 	}
 
-	jsArray := js.Global().Get("Array").New(len(workout))
-	for i, item := range workout {
-		jsArray.SetIndex(i, item)
+	result := js.Global().Get("Object").New()
+
+	// Set headers
+	headers := js.Global().Get("Array").New(len(table.Headers))
+	for i, h := range table.Headers {
+		headers.SetIndex(i, h)
 	}
-	return jsArray
+	result.Set("headers", headers)
+
+	// Set rows
+	rows := js.Global().Get("Array").New(len(table.Rows))
+	for i, row := range table.Rows {
+		jsRow := js.Global().Get("Array").New(len(row))
+		for j, col := range row {
+			jsRow.SetIndex(j, col)
+		}
+		rows.SetIndex(i, jsRow)
+	}
+	result.Set("rows", rows)
+
+	return result
 }
 
 func main() {
-	js.Global().Set("generateWorkout", js.FuncOf(generateWorkout))
+	js.Global().Set("getTable", js.FuncOf(getTable))
 	select {}
 }
